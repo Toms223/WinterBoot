@@ -1,11 +1,12 @@
 package winterboot
 
-import ClassFinder
-import FilterHandler
-import SeedFinder
-import annotations.injection.Branch
-import annotations.injection.Fruit
-import annotations.injection.Leaf
+
+import com.toms223.winterboot.ClassFinder
+import com.toms223.winterboot.FilterHandler
+import com.toms223.winterboot.SeedFinder
+import com.toms223.winterboot.annotations.injection.Branch
+import com.toms223.winterboot.annotations.injection.Fruit
+import com.toms223.winterboot.annotations.injection.Leaf
 import org.http4k.core.*
 import java.io.File
 import kotlin.test.Test

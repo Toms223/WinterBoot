@@ -1,15 +1,16 @@
 package winterboot
 
-import MethodProcessor
-import annotations.mappings.DeleteMapping
-import annotations.mappings.GetMapping
-import annotations.mappings.PostMapping
-import annotations.mappings.PutMapping
-import annotations.parameters.Cookie
-import annotations.parameters.Header
-import annotations.parameters.Path
-import annotations.parameters.Query
-import annotations.parameters.Body
+
+import com.toms223.winterboot.MethodProcessor
+import com.toms223.winterboot.annotations.mappings.DeleteMapping
+import com.toms223.winterboot.annotations.mappings.GetMapping
+import com.toms223.winterboot.annotations.mappings.PostMapping
+import com.toms223.winterboot.annotations.mappings.PutMapping
+import com.toms223.winterboot.annotations.parameters.Cookie
+import com.toms223.winterboot.annotations.parameters.Header
+import com.toms223.winterboot.annotations.parameters.Path
+import com.toms223.winterboot.annotations.parameters.Query
+import com.toms223.winterboot.annotations.parameters.Body
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

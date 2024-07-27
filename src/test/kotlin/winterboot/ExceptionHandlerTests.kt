@@ -1,11 +1,12 @@
 package winterboot
 
-import ClassFinder
-import ExceptionHandler
-import SeedFinder
-import annotations.injection.Fruit
-import annotations.injection.Insect
-import annotations.injection.Pesticide
+
+import com.toms223.winterboot.ClassFinder
+import com.toms223.winterboot.ExceptionHandler
+import com.toms223.winterboot.SeedFinder
+import com.toms223.winterboot.annotations.injection.Fruit
+import com.toms223.winterboot.annotations.injection.Insect
+import com.toms223.winterboot.annotations.injection.Pesticide
 import org.http4k.core.*
 import java.io.File
 import kotlin.test.Test
