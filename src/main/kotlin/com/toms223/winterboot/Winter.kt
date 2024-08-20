@@ -37,19 +37,16 @@ class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
                     "       \\/          \\/          \\/       ")
             val classFindingTime = Instant.now()
             val classFinder = ClassFinder()
-            val path = File(URLDecoder.decode(object {}.javaClass.protectionDomain.codeSource.location.path, "UTF-8")).toURI().toURL()
             val classPathUrls = System.getProperty("java.class.path")
                 .split(File.pathSeparator)
                 .map { File(it).toURI().toURL() }
-                .filter{ it.path.contains("/test/") } + path
-            println(path)
             val annotations = listOf(
                 Controller::class.java,
                 Branch::class.java,
                 Pesticide::class.java,
                 Fruit::class.java
             )
-            val mainClasses = classFinder.findAllClasses(classPathUrls.filter { it.path == path.path }, annotations)
+            val mainClasses = classFinder.findAllClasses(classPathUrls.filter { it.path.contains("/main/") }, annotations)
             val testClasses = classFinder.findAllClasses(classPathUrls.filter { it.path.contains("/test/") }, annotations)
             val fruitClasses = testClasses.ifEmpty { mainClasses }
             val classes = mainClasses + testClasses
