@@ -1,6 +1,8 @@
 package com.toms223.winterboot.processors
 
 import com.toms223.winterboot.annotations.parameters.*
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import kotlinx.serialization.serializer
@@ -14,7 +16,6 @@ import org.http4k.routing.path
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.lang.reflect.ParameterizedType
-import java.time.Instant
 import org.http4k.core.Method as HttpMethod
 
 class Parameterized {
@@ -35,9 +36,10 @@ class Parameterized {
             }
         }
         private fun getRequestParameters(req: Request, parameters: List<Parameter>): Array<Any?>{
-            return parameters.map { parameter ->
+            val params = parameters.map { parameter ->
                     processParameterType(parameter.annotations.first(),req,parameter.name,parameter)
             }.toTypedArray()
+            return params
         }
 
         private fun processParameterType(annotation: Annotation, req: Request, name: String, parameter: Parameter): Any?{
@@ -89,10 +91,11 @@ class Parameterized {
                 "int" -> value.toInt()
                 "float" -> value.toFloat()
                 "double" -> value.toDouble()
-                "bool" -> value.toBoolean()
+                "boolean" -> value.toBoolean()
                 "short" -> value.toShort()
                 "long" -> value.toLong()
                 "instant" -> Instant.parse(value)
+                "localdate" -> LocalDate.parse(value)
                 else -> value
             }
         }

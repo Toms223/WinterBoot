@@ -11,6 +11,7 @@ import com.toms223.winterboot.annotations.parameters.Header
 import com.toms223.winterboot.annotations.parameters.Path
 import com.toms223.winterboot.annotations.parameters.Query
 import com.toms223.winterboot.annotations.parameters.Body
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -73,6 +74,19 @@ class MethodProcessorTests {
                 println(query)
                 return query
             }
+
+            @GetMapping("/date")
+            fun dateTest(@Query query: LocalDate): LocalDate {
+                println(query)
+                return query
+            }
+
+            @GetMapping("/boolean")
+            fun booleanTest(@Query query: Boolean): Boolean {
+                println(query)
+                return query
+            }
+
 
             @GetMapping("/cookies")
             fun cookiesTest(@Cookie cookie: String): String {
@@ -219,5 +233,19 @@ class MethodProcessorTests {
         }}
         val app = routes(routeList)
         assertEquals(app(Request(Method.GET,"/header").header("header","I'm a header!")).body.toString(),"\"I'm a header!\"")
+    }
+
+    @Test
+    fun `should return get with localdate`(){
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val app = routes(routeList)
+        assertEquals(app(Request(Method.GET,"/date").query("query", "2025-05-02")).body.toString(),"\"" + LocalDate.parse("2025-05-02").toString() + "\"")
+    }
+
+    @Test
+    fun `should return get with boolean`(){
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val app = routes(routeList)
+        assertEquals(app(Request(Method.GET,"/boolean").query("query", "true")).body.toString(),"\"true\"")
     }
 }
