@@ -1,5 +1,6 @@
 package com.toms223.winterboot.processors
 
+import com.toms223.winterboot.CustomResponse
 import com.toms223.winterboot.annotations.parameters.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -30,9 +31,20 @@ class Parameterized {
         : RoutingHttpHandler {
             val parameters = getParameters(method)
             val httpMethod = mapEntry.value
-            return path.lowercase() bind httpMethod to {req -> Response(methodToStatusMap[httpMethod] ?: Status.OK)
-                .body(method.invoke(obj,*getRequestParameters(req,parameters))?.toJsonString() ?: "")
-                .header("Content-Type", "application/json")
+            return path.lowercase() bind httpMethod to { req ->
+                val response = Response(methodToStatusMap[httpMethod] ?: Status.OK)
+                val returnValue = method.invoke(obj,*getRequestParameters(req,parameters))
+                if(returnValue != null && returnValue.javaClass.isAssignableFrom(CustomResponse::class.java)) {
+                    val customResponse = returnValue as CustomResponse
+                    val cookiedResponse = customResponse.cookies.fold(response) { acc, cookie ->
+                        acc.cookie(cookie)
+                    }
+                    cookiedResponse.body(customResponse.body.toJsonString())
+                        .headers(customResponse.headers)
+                } else {
+                    response.body(returnValue?.toJsonString() ?: "").header("Content-Type", "application/json")
+                }
+
             }
         }
         private fun getRequestParameters(req: Request, parameters: List<Parameter>): Array<Any?>{

@@ -1,6 +1,7 @@
 package winterboot
 
 
+import com.toms223.winterboot.CustomResponse
 import com.toms223.winterboot.MethodProcessor
 import com.toms223.winterboot.annotations.mappings.DeleteMapping
 import com.toms223.winterboot.annotations.mappings.GetMapping
@@ -17,12 +18,14 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.*
 import org.http4k.core.cookie.cookie
+import org.http4k.core.cookie.cookies
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.http4k.core.cookie.Cookie as Kookie
 
 
 class MethodProcessorTests {
@@ -104,6 +107,16 @@ class MethodProcessorTests {
             fun headerTest(@Header header: String): String {
                 println(header)
                 return header
+            }
+
+            @GetMapping("custom/response")
+            fun customResponseTest(): CustomResponse {
+                val resp = CustomResponse(listOf(Kookie("hello", "world")), listOf("header" to "added"))
+                return resp {
+                    @Serializable
+                    data class Awesome(val cool: String = "I am")
+                    Awesome()
+                }
             }
         }
         val testController = TestController("")
@@ -246,6 +259,19 @@ class MethodProcessorTests {
     fun `should return get with boolean`(){
         val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
         val app = routes(routeList)
-        assertEquals(app(Request(Method.GET,"/boolean").query("query", "true")).body.toString(),"\"true\"")
+        assertEquals(app(Request(Method.GET,"/boolean").query("query", "true")).body.toString(),"true")
+    }
+
+    @Test
+    fun `should return get with custom response`(){
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val app = routes(routeList)
+        @Serializable
+        data class Awesome(val cool: String = "I am")
+        assertEquals(app(Request(Method.GET,"/custom/response")).body.toString(), Json.encodeToString(
+            Awesome("I am")
+        ))
+        assertTrue(app(Request(Method.GET,"/custom/response")).cookies().any { it.name == "hello" && it.value == "world" })
+        assertTrue(app(Request(Method.GET,"/custom/response")).headers.any { it.first == "header" && it.second == "added" })
     }
 }

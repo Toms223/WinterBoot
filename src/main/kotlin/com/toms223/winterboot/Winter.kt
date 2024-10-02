@@ -8,6 +8,7 @@ import com.toms223.winterboot.annotations.injection.Pesticide
 import org.http4k.core.ContentType
 import org.http4k.core.Filter
 import org.http4k.core.then
+import org.http4k.lens.main
 import org.http4k.routing.ResourceLoader
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.routes
@@ -46,7 +47,9 @@ class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
                 Pesticide::class.java,
                 Fruit::class.java
             )
-            val mainClasses = classFinder.findAllClasses(classPathUrls.filter { it.path.contains("/main/") }, annotations)
+            val mainClasses = classFinder.findAllClasses(classPathUrls.filter { it.path.contains("/main/") }, annotations).ifEmpty {
+                classFinder.findAllClasses(classPathUrls, annotations)
+            }
             val testClasses = classFinder.findAllClasses(classPathUrls.filter { it.path.contains("/test/") }, annotations)
             val fruitClasses = testClasses.ifEmpty { mainClasses }
             val classes = mainClasses + testClasses
