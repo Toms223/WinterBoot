@@ -3,10 +3,10 @@ package winterboot
 
 import com.toms223.winterboot.CustomResponse
 import com.toms223.winterboot.MethodProcessor
-import com.toms223.winterboot.annotations.mappings.DeleteMapping
-import com.toms223.winterboot.annotations.mappings.GetMapping
-import com.toms223.winterboot.annotations.mappings.PostMapping
-import com.toms223.winterboot.annotations.mappings.PutMapping
+import com.toms223.kotlinreflection.mappings.DeleteMapping
+import com.toms223.kotlinreflection.mappings.GetMapping
+import com.toms223.kotlinreflection.mappings.PostMapping
+import com.toms223.kotlinreflection.mappings.PutMapping
 import com.toms223.winterboot.annotations.parameters.Cookie
 import com.toms223.winterboot.annotations.parameters.Header
 import com.toms223.winterboot.annotations.parameters.Path

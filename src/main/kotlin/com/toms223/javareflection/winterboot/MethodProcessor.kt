@@ -2,10 +2,10 @@ package com.toms223.winterboot
 
 
 import org.http4k.routing.RoutingHttpHandler
-import com.toms223.winterboot.annotations.mappings.DeleteMapping
-import com.toms223.winterboot.annotations.mappings.GetMapping
-import com.toms223.winterboot.annotations.mappings.PostMapping
-import com.toms223.winterboot.annotations.mappings.PutMapping
+import com.toms223.kotlinreflection.mappings.DeleteMapping
+import com.toms223.kotlinreflection.mappings.GetMapping
+import com.toms223.kotlinreflection.mappings.PostMapping
+import com.toms223.kotlinreflection.mappings.PutMapping
 import com.toms223.winterboot.processors.Parameterized
 import com.toms223.winterboot.processors.Unparameterized
 import java.lang.reflect.Method

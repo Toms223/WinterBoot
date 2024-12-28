@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation(platform("org.http4k:http4k-bom:5.13.8.0"))
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")

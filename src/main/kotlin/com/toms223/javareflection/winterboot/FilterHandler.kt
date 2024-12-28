@@ -1,5 +1,6 @@
 package com.toms223.winterboot
 
+import com.toms223.kotlinreflection.ObjectInstantiation
 import com.toms223.winterboot.annotations.injection.Leaf
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
@@ -8,9 +9,9 @@ import org.http4k.core.then
 import java.lang.reflect.Method
 
 class FilterHandler {
-    private val objectInstantiator = ObjectInstantiator()
+    private val objectInstantiation = ObjectInstantiation()
     fun get(seedMap: Map<String, Any>, branchList: List<Class<*>>): Filter{
-        val branchObjectList = branchList.map { objectInstantiator.instantiateObject(it, seedMap) }
+        val branchObjectList = branchList.map { objectInstantiation.instantiateObject(it, seedMap) }
         val leafList = branchList.associate {
             Pair(branchObjectList[branchList.indexOf(it)], getLeafs(it))
         }

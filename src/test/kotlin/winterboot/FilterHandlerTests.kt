@@ -2,8 +2,8 @@ package winterboot
 
 
 import com.toms223.winterboot.ClassFinder
-import com.toms223.winterboot.FilterHandler
-import com.toms223.winterboot.SeedFinder
+import com.toms223.kotlinreflection.FilterHandler
+import com.toms223.kotlinreflection.SeedFinder
 import com.toms223.winterboot.annotations.injection.Branch
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Leaf

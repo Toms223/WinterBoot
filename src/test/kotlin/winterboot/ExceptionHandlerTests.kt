@@ -2,8 +2,8 @@ package winterboot
 
 
 import com.toms223.winterboot.ClassFinder
-import com.toms223.winterboot.ExceptionHandler
-import com.toms223.winterboot.SeedFinder
+import com.toms223.kotlinreflection.ExceptionHandler
+import com.toms223.kotlinreflection.SeedFinder
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Insect
 import com.toms223.winterboot.annotations.injection.Pesticide

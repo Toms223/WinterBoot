@@ -1,5 +1,6 @@
 package com.toms223.winterboot
 
+import com.toms223.kotlinreflection.ObjectInstantiation
 import com.toms223.winterboot.annotations.injection.Insect
 import org.http4k.core.Filter
 import org.http4k.core.Response
@@ -10,9 +11,9 @@ import java.lang.reflect.Method
 import kotlin.Exception
 
 class ExceptionHandler {
-    private val objectInstantiator = ObjectInstantiator()
+    private val objectInstantiation = ObjectInstantiation()
     fun get(seedMap: Map<String, Any>, pesticideList: List<Class<*>>): Filter{
-        val objectInstantiator = pesticideList.map { objectInstantiator.instantiateObject(it,seedMap) }
+        val objectInstantiator = pesticideList.map { objectInstantiation.instantiateObject(it,seedMap) }
         val insects = pesticideList.associate { pesticide ->
             Pair(objectInstantiator[pesticideList.indexOf(pesticide)],getInsects(pesticide))
         }
