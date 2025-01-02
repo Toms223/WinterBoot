@@ -3,10 +3,11 @@ package com.toms223.winterboot
 import java.io.File
 import java.net.URL
 import java.util.jar.JarFile
+import kotlin.reflect.KClass
 
 class ClassFinder {
     private val suffix = ".class"
-    fun findAllClasses(classPathUrls: List<URL>, annotations: List<Class<*>>): List<Class<*>> =
+    fun findAllClasses(classPathUrls: List<URL>, annotations: List<KClass<out Annotation>>): List<KClass<out Any>> =
         classPathUrls.mapNotNull { url ->
             when(url.protocol) {
                 "file" -> {
@@ -25,12 +26,12 @@ class ClassFinder {
                 }
             }
         }.flatten()
-    private fun findClassesInDirectory(directory: File, annotations: List<Class<*>>): List<Class<*>> =
+    private fun findClassesInDirectory(directory: File, annotations: List<KClass<out Annotation>>): List<KClass<out Any>> =
         directory.walkTopDown().toList().mapNotNull { file ->
             if (file.isFile && file.name.endsWith(suffix)) {
                 val className = file.toRelativeString(directory).removeSuffix(suffix).replace(File.separator, ".")
                 if(checkAnnotation(className,annotations)){
-                    Class.forName(className)
+                    Class.forName(className).kotlin
                 } else {
                     null
                 }
@@ -39,14 +40,14 @@ class ClassFinder {
             }
         }
 
-    private fun findClassesInJar(jarFile: File, annotations: List<Class<*>>): List<Class<*>> {
+    private fun findClassesInJar(jarFile: File, annotations: List<KClass<out Annotation>>): List<KClass<out Any>> {
         JarFile(jarFile).use { jar ->
             return jar.entries().toList().mapNotNull { entry ->
                 if (!entry.isDirectory && entry.name.endsWith(suffix)) {
                     val className = entry.name.removeSuffix(suffix).replace("/", ".")
                     if(checkAnnotation(className,annotations)){
                         println("Could instantiate class: $className")
-                        Class.forName(className)
+                        Class.forName(className).kotlin
                     } else {
                         null
                     }
@@ -57,14 +58,9 @@ class ClassFinder {
         }
     }
 
-    private fun checkAnnotation(className: String, annotations: List<Class<*>>): Boolean{
+    private fun checkAnnotation(className: String, annotations: List<KClass<out Annotation>>): Boolean{
         try {
-            val clazz = Class.forName(className)
-            return clazz.annotations.any {classAnnotation ->
-                annotations.any { annotation ->
-                    classAnnotation.annotationClass.simpleName == annotation.simpleName
-                }
-            }
+            return annotations.any { annotation -> Class.forName(className).kotlin.annotations.any { it.annotationClass == annotation } }
         } catch (e: Throwable) {
             return false
         }

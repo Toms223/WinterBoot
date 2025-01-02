@@ -1,17 +1,15 @@
-package com.toms223.kotlinreflection
+package com.toms223.winterboot
 
 import com.toms223.winterboot.annotations.injection.Insect
-import com.toms223.winterboot.annotations.injection.Seed
 import org.http4k.core.Filter
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.then
 import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Method
 import kotlin.Exception
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.superclasses
 
@@ -39,13 +37,13 @@ class ExceptionHandler {
     }
 
     private fun getInsects(kClass: KClass<out Any>): List<KFunction<*>>{
-        return kClass.memberFunctions.filter { it.annotations.map{it::class}.contains(Insect::class) }
+        return kClass.memberFunctions.filter { it.annotations.any { annotation -> annotation.annotationClass == Insect::class } }
     }
 
     private fun constructResponse(function: KFunction<*>, exception: Exception, seedMap: Map<String, Any>, obj: Any): Response{
         val parameters = function.parameters.mapNotNull { parameter ->
             val parameterTypeOfParam = parameter.type.classifier as KClass<*>
-            if(Exception::class.isSubclassOf(parameterTypeOfParam)){
+            if(Exception::class.isSuperclassOf(parameterTypeOfParam)){
                 exception
             } else {
                 seedMap[parameter.name?.lowercase()]
@@ -60,7 +58,7 @@ class ExceptionHandler {
                     next(it)
                 } catch (e: Exception){
                     val exception = if(e is InvocationTargetException) e.targetException as Exception else e
-                    val insect = function.annotations.first { it::class == Insect::class } as Insect
+                    val insect = function.annotations.first { it.annotationClass == Insect::class } as Insect
                     if(exception::class == insect.type){
                         constructResponse(function, exception, seedMap, obj)
                     } else if(exception::class.superclasses.contains(insect.type)){

@@ -1,4 +1,4 @@
-package com.toms223.kotlinreflection.mappings
+package com.toms223.winterboot.mappings
 
 @Target(AnnotationTarget.FUNCTION)
 annotation class GetMapping(val path: String)

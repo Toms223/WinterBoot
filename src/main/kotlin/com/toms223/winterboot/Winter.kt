@@ -1,10 +1,6 @@
 package com.toms223.winterboot
 
 
-import com.toms223.kotlinreflection.ExceptionHandler
-import com.toms223.kotlinreflection.FilterHandler
-import com.toms223.kotlinreflection.RouteHandler
-import com.toms223.kotlinreflection.SeedFinder
 import com.toms223.winterboot.annotations.Controller
 import com.toms223.winterboot.annotations.injection.Branch
 import com.toms223.winterboot.annotations.injection.Fruit
@@ -18,6 +14,7 @@ import org.http4k.routing.routes
 import org.http4k.routing.singlePageApp
 import java.io.File
 import java.time.Instant
+import kotlin.reflect.KClass
 
 class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
     companion object {
@@ -25,9 +22,9 @@ class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
         private val filterHandler = FilterHandler()
         private val exceptionHandler = ExceptionHandler()
         private val seeds: Map<String, Any>
-        private val controllers: List<Class<*>>
-        private val branches: List<Class<*>>
-        private val pesticides: List<Class<*>>
+        private val controllers: List<KClass<out Any>>
+        private val branches: List<KClass<out Any>>
+        private val pesticides: List<KClass<out Any>>
         private val routeList: List<RoutingHttpHandler>
         private val filters: Filter
         private val exceptions: Filter
@@ -44,10 +41,10 @@ class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
                 .split(File.pathSeparator)
                 .map { File(it).toURI().toURL() }
             val annotations = listOf(
-                Controller::class.java,
-                Branch::class.java,
-                Pesticide::class.java,
-                Fruit::class.java
+                Controller::class,
+                Branch::class,
+                Pesticide::class,
+                Fruit::class
             )
             val mainClasses = classFinder.findAllClasses(classPathUrls.filter { it.path.contains("/main/") }, annotations).ifEmpty {
                 classFinder.findAllClasses(classPathUrls, annotations)
@@ -55,25 +52,25 @@ class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
             val testClasses = classFinder.findAllClasses(classPathUrls.filter { it.path.contains("/test/") }, annotations)
             val fruitClasses = testClasses.ifEmpty { mainClasses }
             val classes = mainClasses + testClasses
-            println("Took ${Instant.now().toEpochMilli()- classFindingTime.toEpochMilli()} milliseconds to find Classes")
-            val fruits = fruitClasses.filter { annotation ->
-                annotation.annotations.any { clazz ->
-                    clazz.annotationClass.simpleName == Fruit::class.java.simpleName
+            println("Took ${Instant.now().toEpochMilli() - classFindingTime.toEpochMilli()} milliseconds to find Classes")
+            val fruits = fruitClasses.filter { kClass ->
+                kClass.annotations.any { annotation ->
+                    annotation.annotationClass == Fruit::class
                 }
             }
-            branches = classes.filter { annotation ->
-                annotation.annotations.any { clazz ->
-                    clazz.annotationClass.simpleName == Branch::class.java.simpleName
+            branches = classes.filter { kClass ->
+                kClass.annotations.any { annotation ->
+                    annotation.annotationClass == Branch::class
                 }
             }
-            pesticides = classes.filter { annotation ->
-                annotation.annotations.any { clazz ->
-                    clazz.annotationClass.simpleName == Pesticide::class.java.simpleName
+            pesticides = classes.filter { kClass ->
+                kClass.annotations.any { annotation ->
+                    annotation.annotationClass == Pesticide::class
                 }
             }
-            controllers = classes.filter { annotation ->
-                annotation.annotations.any { clazz ->
-                    clazz.annotationClass.simpleName == Controller::class.java.simpleName
+            controllers = classes.filter { kClass ->
+                kClass.annotations.any { annotation ->
+                    annotation.annotationClass == Controller::class
                 }
             }
             val seedFindingTime = Instant.now()

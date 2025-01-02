@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.serialization") version "1.9.23"
@@ -27,10 +25,4 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(21)
-}
-
-tasks.withType<KotlinCompile>{
-    kotlinOptions {
-        javaParameters = true
-    }
 }

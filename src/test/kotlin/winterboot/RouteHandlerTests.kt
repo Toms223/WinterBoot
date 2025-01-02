@@ -1,12 +1,12 @@
 package winterboot
 
 import com.toms223.winterboot.ClassFinder
-import com.toms223.kotlinreflection.RouteHandler
-import com.toms223.kotlinreflection.SeedFinder
+import com.toms223.winterboot.RouteHandler
+import com.toms223.winterboot.SeedFinder
 import com.toms223.winterboot.annotations.Controller
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Seed
-import com.toms223.kotlinreflection.mappings.GetMapping
+import com.toms223.winterboot.mappings.GetMapping
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -28,8 +28,8 @@ class RouteHandlerTests {
         }
         private val classFinder = ClassFinder()
         private val annotations = listOf(
-            Controller::class.java,
-            Fruit::class.java
+            Controller::class,
+            Fruit::class
         )
         private val classPathUrls = System.getProperty("java.class.path")
                 .split(File.pathSeparator)

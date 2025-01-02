@@ -1,9 +1,10 @@
 package winterboot
 
 
+
 import com.toms223.winterboot.ClassFinder
-import com.toms223.kotlinreflection.ExceptionHandler
-import com.toms223.kotlinreflection.SeedFinder
+import com.toms223.winterboot.ExceptionHandler
+import com.toms223.winterboot.SeedFinder
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Insect
 import com.toms223.winterboot.annotations.injection.Pesticide
@@ -19,8 +20,8 @@ class ExceptionHandlerTests {
                 .map { File(it).toURI().toURL() }
                 .filter { it.path.contains("/test/") }
         private val annotations = listOf(
-            Pesticide::class.java,
-            Fruit::class.java
+            Pesticide::class,
+            Fruit::class
         )
         private val classFinder = ClassFinder()
         private val classes = classFinder.findAllClasses(classPathUrls, annotations)

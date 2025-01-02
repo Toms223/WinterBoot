@@ -4,25 +4,30 @@ import com.toms223.winterboot.CustomResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import kotlinx.serialization.serializer
+import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.cookie.cookie
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
-import java.lang.reflect.Method
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 class Unparameterized {
     companion object {
         private val methodToStatusMap = mapOf(
-            org.http4k.core.Method.POST to Status.CREATED
+            Method.POST to Status.CREATED
         )
         fun process(
-            method: Method, obj: Any, mapEntry: Map.Entry<Class<out Annotation>, org.http4k.core.Method>, path: String)
-        : RoutingHttpHandler {
+            method: KFunction<*>,
+            obj: Any,
+            mapEntry: Map.Entry<KClass<out Annotation>, Method>,
+            path: String
+        ): RoutingHttpHandler {
             val httpMethod = mapEntry.value
             return path bind httpMethod to {
                 val response = Response(methodToStatusMap[httpMethod] ?: Status.OK)
-                val returnValue = method.invoke(obj)
+                val returnValue = method.call(obj)
                 if (returnValue != null && returnValue.javaClass.isAssignableFrom(CustomResponse::class.java)) {
                     val customResponse = returnValue as CustomResponse
                     val cookiedResponse = customResponse.cookies.fold(response) { acc, cookie ->

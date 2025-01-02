@@ -3,10 +3,10 @@ package winterboot
 
 import com.toms223.winterboot.CustomResponse
 import com.toms223.winterboot.MethodProcessor
-import com.toms223.kotlinreflection.mappings.DeleteMapping
-import com.toms223.kotlinreflection.mappings.GetMapping
-import com.toms223.kotlinreflection.mappings.PostMapping
-import com.toms223.kotlinreflection.mappings.PutMapping
+import com.toms223.winterboot.mappings.DeleteMapping
+import com.toms223.winterboot.mappings.GetMapping
+import com.toms223.winterboot.mappings.PostMapping
+import com.toms223.winterboot.mappings.PutMapping
 import com.toms223.winterboot.annotations.parameters.Cookie
 import com.toms223.winterboot.annotations.parameters.Header
 import com.toms223.winterboot.annotations.parameters.Path
@@ -124,7 +124,7 @@ class MethodProcessorTests {
     }
     @Test
     fun `Should return simple get route`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/testget" bind Method.GET to { Response(Status.OK).body(testController.simpleGet())}).description
         }}
@@ -134,7 +134,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return simple put route`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/testput" bind Method.PUT to {
                 Response(Status.OK).body(testController.simplePut())
@@ -146,7 +146,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return simple post route`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/testpost" bind Method.POST to {
                 Response(Status.OK).body(testController.simplePost())
@@ -158,7 +158,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return simple delete route`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/testdelete" bind Method.DELETE to {
                 Response(Status.OK).body(testController.simpleDelete())
@@ -170,7 +170,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return get with path parameters`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/test/{path}" bind Method.GET to {
                 req: Request -> Response(Status.OK).body(
@@ -183,7 +183,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return get with query single parameters`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/query" bind Method.GET to {
                 req: Request -> Response(Status.OK).body(
@@ -197,7 +197,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return get with query multiple parameters`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/queries" bind Method.GET to { req: Request -> Response(Status.OK).body(Json.encodeToString(testController.queriesTest(req.query("query")!!.split(',').map { string-> string.toDouble() })))}).description
         }}
@@ -207,7 +207,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return get with body parameters`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/body" bind Method.PUT to { req: Request -> Response(Status.OK).body(
                 Json.encodeToString(testController.bodyTest(
@@ -230,7 +230,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return get with cookie parameters`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/cookies" bind Method.GET to { req: Request -> Response(Status.OK).body(testController.cookiesTest(req.cookie("cookie")!!.value))}).description
         }}
@@ -240,7 +240,7 @@ class MethodProcessorTests {
 
     @Test
     fun `Should return get with header parameters`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         assertTrue { routeList.any {
             it.description == ("/header" bind Method.GET to { req: Request -> Response(Status.OK).body(testController.headerTest(req.header("header")!!))}).description
         }}
@@ -250,21 +250,21 @@ class MethodProcessorTests {
 
     @Test
     fun `should return get with localdate`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         val app = routes(routeList)
         assertEquals(app(Request(Method.GET,"/date").query("query", "2025-05-02")).body.toString(),"\"" + LocalDate.parse("2025-05-02").toString() + "\"")
     }
 
     @Test
     fun `should return get with boolean`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         val app = routes(routeList)
         assertEquals(app(Request(Method.GET,"/boolean").query("query", "true")).body.toString(),"true")
     }
 
     @Test
     fun `should return get with custom response`(){
-        val routeList = methodProcessor.methodsToRoutes(testController, testController::class.java)
+        val routeList = methodProcessor.methodsToRoutes(testController, testController::class)
         val app = routes(routeList)
         @Serializable
         data class Awesome(val cool: String = "I am")

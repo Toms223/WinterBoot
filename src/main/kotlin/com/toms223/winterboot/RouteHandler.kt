@@ -1,14 +1,14 @@
-package com.toms223.kotlinreflection
+package com.toms223.winterboot
 
-import com.toms223.winterboot.MethodProcessor
 import org.http4k.routing.RoutingHttpHandler
+import kotlin.reflect.KClass
 
 
 class RouteHandler {
     private val methodProcessor = MethodProcessor()
     private val objectInstantiation = ObjectInstantiation()
 
-    fun get(seedsMap: Map<String, Any>, controllerList: List<Class<*>>): List<RoutingHttpHandler> {
+    fun get(seedsMap: Map<String, Any>, controllerList: List<KClass<out Any>>): List<RoutingHttpHandler> {
         val objControllerList = controllerList.map { objectInstantiation.instantiateObject(it,seedsMap) }
         return controllerList.map { methodProcessor.methodsToRoutes(objControllerList[controllerList.indexOf(it)], it) }.flatten()
     }

@@ -1,16 +1,17 @@
 package com.toms223.winterboot
 
-import com.toms223.kotlinreflection.ObjectInstantiation
 import com.toms223.winterboot.annotations.injection.Leaf
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 
 import org.http4k.core.then
-import java.lang.reflect.Method
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.memberFunctions
 
 class FilterHandler {
     private val objectInstantiation = ObjectInstantiation()
-    fun get(seedMap: Map<String, Any>, branchList: List<Class<*>>): Filter{
+    fun get(seedMap: Map<String, Any>, branchList: List<KClass<out Any>>): Filter{
         val branchObjectList = branchList.map { objectInstantiation.instantiateObject(it, seedMap) }
         val leafList = branchList.associate {
             Pair(branchObjectList[branchList.indexOf(it)], getLeafs(it))
@@ -23,23 +24,23 @@ class FilterHandler {
         }.flatten().reduce { acc, filter -> filter.then(acc) }
     }
 
-    private fun getLeafs(branch: Class<*>): List<Method>{
-        return branch.declaredMethods.filter { method ->
-            method.isAnnotationPresent(Leaf::class.java) && method.parameters.any { it.name.lowercase() == "next" }
+    private fun getLeafs(branch: KClass<out Any>): List<KFunction<*>>{
+        return branch.memberFunctions.filter { function ->
+            function.annotations.any { annotation -> annotation.annotationClass == Leaf::class }
         }
     }
 
     @SuppressWarnings
-    private fun createFilter(method: Method, seedMap: Map<String, Any>, obj: Any): Filter{
+    private fun createFilter(function: KFunction<*>, seedMap: Map<String, Any>, obj: Any): Filter{
         return Filter { next ->
             { request ->
-                val parameters = method.parameters.mapNotNull  {
-                    when(it.name.lowercase()) {
+                val parameters = function.parameters.mapNotNull  {
+                    when(it.name?.lowercase()) {
                         "next" -> next
-                        else -> seedMap[it.name.lowercase()]
+                        else -> seedMap[it.name?.lowercase()]
                     }
                 }.toTypedArray()
-                (method.invoke(obj,*parameters) as HttpHandler).invoke(request)
+                (function.call(obj,*parameters) as HttpHandler).invoke(request)
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.toms223.kotlinreflection
+package com.toms223.winterboot
 
 
 import com.toms223.winterboot.annotations.injection.Seed
@@ -14,7 +14,7 @@ class SeedFinder {
         val seedFields = fruitList.map { fruit ->
             val obj = objectList[fruitList.indexOf(fruit)]
             fruit.memberProperties.mapNotNull{ property ->
-                if(property.annotations.contains(Seed())){
+                if(property.annotations.any { it.annotationClass == Seed::class }){
                     val value = (property as KProperty1<Any, *>).get(obj) ?: return@mapNotNull null
                     Pair(property.name.lowercase(), value)
                 } else {
@@ -26,7 +26,7 @@ class SeedFinder {
         val seedMethods = fruitList.map { fruit ->
             val obj = objectList[fruitList.indexOf(fruit)]
             fruit.memberFunctions.mapNotNull{ function ->
-                if(function.annotations.map{it::class}.contains(Seed::class)){
+                if(function.annotations.any { it.annotationClass == Seed::class }){
                     val value = function.call(obj) ?: return@mapNotNull null
                     Pair(function.name.lowercase(), value)
                 } else {

@@ -2,8 +2,8 @@ package winterboot
 
 
 import com.toms223.winterboot.ClassFinder
-import com.toms223.kotlinreflection.FilterHandler
-import com.toms223.kotlinreflection.SeedFinder
+import com.toms223.winterboot.FilterHandler
+import com.toms223.winterboot.SeedFinder
 import com.toms223.winterboot.annotations.injection.Branch
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Leaf
@@ -21,8 +21,8 @@ class FilterHandlerTests {
                 .map { File(it).toURI().toURL() }
                 .filter { it.path.contains("/test/") }
         private val annotations = listOf(
-            Branch::class.java,
-            Fruit::class.java
+            Branch::class,
+            Fruit::class
         )
         private val classFinder = ClassFinder()
         private val classes = classFinder.findAllClasses(classPathUrls, annotations)

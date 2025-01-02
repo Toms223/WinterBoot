@@ -14,9 +14,11 @@ import org.http4k.core.cookie.cookie
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.path
-import java.lang.reflect.Method
-import java.lang.reflect.Parameter
-import java.lang.reflect.ParameterizedType
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 import org.http4k.core.Method as HttpMethod
 
 class Parameterized {
@@ -27,13 +29,26 @@ class Parameterized {
         )
 
         fun process(
-            method: Method, obj: Any, mapEntry: Map.Entry<Class<out Annotation>, HttpMethod>, path: String)
-        : RoutingHttpHandler {
-            val parameters = getParameters(method)
+            method: KFunction<*>,
+            parameters: List<KParameter>,
+            obj: Any, mapEntry:
+            Map.Entry<KClass<out Annotation>, HttpMethod>,
+            path: String
+        ): RoutingHttpHandler {
+            val filteredParameters = parameters.filter {
+                it.annotations.any {
+                    annotation ->
+                    annotation.annotationClass == Path::class
+                            || annotation.annotationClass == Cookie::class
+                            || annotation.annotationClass == Query::class
+                            || annotation.annotationClass == Body::class
+                            || annotation.annotationClass == Header::class
+                }
+            }
             val httpMethod = mapEntry.value
             return path.lowercase() bind httpMethod to { req ->
                 val response = Response(methodToStatusMap[httpMethod] ?: Status.OK)
-                val returnValue = method.invoke(obj,*getRequestParameters(req,parameters))
+                val returnValue = method.call(obj,*getRequestParameters(req,filteredParameters))
                 if(returnValue != null && returnValue.javaClass.isAssignableFrom(CustomResponse::class.java)) {
                     val customResponse = returnValue as CustomResponse
                     val cookiedResponse = customResponse.cookies.fold(response) { acc, cookie ->
@@ -47,14 +62,14 @@ class Parameterized {
 
             }
         }
-        private fun getRequestParameters(req: Request, parameters: List<Parameter>): Array<Any?>{
+        private fun getRequestParameters(req: Request, parameters: List<KParameter>): Array<Any?>{
             val params = parameters.map { parameter ->
-                    processParameterType(parameter.annotations.first(),req,parameter.name,parameter)
+                    processParameterType(parameter.annotations.first(), req, parameter.name!!, parameter)
             }.toTypedArray()
             return params
         }
 
-        private fun processParameterType(annotation: Annotation, req: Request, name: String, parameter: Parameter): Any?{
+        private fun processParameterType(annotation: Annotation, req: Request, name: String, parameter: KParameter): Any?{
             return when(annotation){
                 is Path -> {
                     typeConverter(req.path(name.lowercase())
@@ -69,10 +84,10 @@ class Parameterized {
                     )
                 }
                 is Query -> {
-                    if(List::class.java.isAssignableFrom(parameter.type)){
+                    if(parameter.type.classifier == List::class) {
                         if(req.query(name) == null) throw IllegalArgumentException("No query argument found.")
-                        val listType = parameter.parameterizedType as ParameterizedType
-                        return req.query(name)!!.split(',').map { typeConverter(it, listType.actualTypeArguments[0] as Class<*>) }
+                        val listType = parameter.type.arguments.first().type!!
+                        return req.query(name)!!.split(',').map { typeConverter(it, listType) }
                     }
                     val value = req.query(name) ?: return null
                     typeConverter(value, parameter.type)
@@ -90,35 +105,24 @@ class Parameterized {
             }
         }
 
-        private fun deserializeBody(jsonString: String, type: Class<*>): Any{
+        private fun deserializeBody(jsonString: String, type: KType): Any? {
             val json = Json { ignoreUnknownKeys = true }
             val jsonElement = json.parseToJsonElement(jsonString)
             val serializer = json.serializersModule.serializer(type)
             return json.decodeFromJsonElement(serializer, jsonElement)
         }
 
-        private fun <T> typeConverter(value: String, valueType: Class<T>): Any {
-            return when (valueType.simpleName.lowercase()) {
-                "integer" -> value.toInt()
-                "int" -> value.toInt()
-                "float" -> value.toFloat()
-                "double" -> value.toDouble()
-                "boolean" -> value.toBoolean()
-                "short" -> value.toShort()
-                "long" -> value.toLong()
-                "instant" -> Instant.parse(value)
-                "localdate" -> LocalDate.parse(value)
+        private fun typeConverter(value: String, valueType: KType): Any {
+            return when (valueType) {
+                Int::class.createType() -> value.toInt()
+                Float::class.createType() -> value.toFloat()
+                Double::class.createType() -> value.toDouble()
+                Boolean::class.createType() -> value.toBoolean()
+                Short::class.createType() -> value.toShort()
+                Long::class.createType() -> value.toLong()
+                Instant::class.createType() -> Instant.parse(value)
+                LocalDate::class.createType() -> LocalDate.parse(value)
                 else -> value
-            }
-        }
-
-        private fun getParameters(method: Method): List<Parameter>{
-            return method.parameters.filter {
-                it.isAnnotationPresent(Cookie::class.java) ||
-                        it.isAnnotationPresent(Path::class.java) ||
-                        it.isAnnotationPresent(Query::class.java) ||
-                        it.isAnnotationPresent(Body::class.java) ||
-                        it.isAnnotationPresent(Header::class.java)
             }
         }
 

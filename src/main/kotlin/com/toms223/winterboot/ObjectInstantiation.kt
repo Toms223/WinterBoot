@@ -1,4 +1,4 @@
-package com.toms223.kotlinreflection
+package com.toms223.winterboot
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
