@@ -6,7 +6,7 @@ import com.toms223.winterboot.SeedFinder
 import com.toms223.winterboot.annotations.Controller
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Seed
-import com.toms223.winterboot.mappings.GetMapping
+import com.toms223.winterboot.annotations.mappings.GetMapping
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
