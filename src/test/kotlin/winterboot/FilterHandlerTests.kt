@@ -7,6 +7,7 @@ import com.toms223.winterboot.SeedFinder
 import com.toms223.winterboot.annotations.injection.Branch
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Leaf
+import com.toms223.winterboot.annotations.injection.Order
 import org.http4k.core.*
 import java.io.File
 import kotlin.test.Test
@@ -64,6 +65,41 @@ class FilterHandlerTests {
     fun `Should return a filter and block the request`(){
         @Branch
         class YouShallNotPass{
+            @Leaf
+            fun iWillBlock(next: HttpHandler): HttpHandler {
+                return {
+                    if(it.header("filtered") == "true"){
+                        Response(Status.BAD_REQUEST)
+                    } else {
+                        next(it).header("filtered","false")
+                    }
+                }
+            }
+        }
+        val request = Request(Method.GET, "/hello")
+        val requestModified = request.header("filtered","true")
+        val response = filterHandler.then{
+            Response(Status.OK)}(request)
+        val filteredResponse = filterHandler.then{
+            Response(Status.OK)}(requestModified)
+        assertEquals(Status.OK, response.status)
+        assertTrue(response.header("hello") == "world")
+        assertEquals(Status.BAD_REQUEST, filteredResponse.status)
+        assertTrue(filteredResponse.header("filtered") != "false")
+    }
+
+    @Test
+    fun `Should return a filter and execute by order and block the request`(){
+        @Branch
+        class YouShallNotPass{
+            @Leaf
+            fun iWillNotBlock(next: HttpHandler): HttpHandler {
+                return {
+                    next(it)
+                }
+            }
+
+            @Order(1)
             @Leaf
             fun iWillBlock(next: HttpHandler): HttpHandler {
                 return {

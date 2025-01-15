@@ -1,6 +1,7 @@
 package com.toms223.winterboot
 
 import com.toms223.winterboot.annotations.injection.Leaf
+import com.toms223.winterboot.annotations.injection.Order
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 
@@ -17,11 +18,12 @@ class FilterHandler {
             Pair(branchObjectList[branchList.indexOf(it)], getLeafs(it))
         }
 
-        return leafList.map {
+        val sortedLeafList = leafList.map {
             it.value.map {
-                leaf -> createFilter(leaf,seedMap,it.key)
+                    leaf -> Pair(createFilter(leaf,seedMap,it.key), order(leaf))
             }
-        }.flatten().reduce { acc, filter -> filter.then(acc) }
+        }.flatten().sortedBy { it.second }
+        return sortedLeafList.map { it.first }.reduce { acc, filter -> filter.then(acc) }
     }
 
     private fun getLeafs(branch: KClass<out Any>): List<KFunction<*>>{
@@ -43,5 +45,10 @@ class FilterHandler {
                 (function.call(obj,*parameters) as HttpHandler).invoke(request)
             }
         }
+    }
+
+    private fun order(function: KFunction<*>): Int{
+        return ((function.annotations.firstOrNull { it.annotationClass == Order::class }
+                ) as Order?)?.value ?: 0
     }
 }

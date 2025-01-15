@@ -12,8 +12,6 @@ import com.toms223.winterboot.annotations.parameters.Header
 import com.toms223.winterboot.annotations.parameters.Path
 import com.toms223.winterboot.annotations.parameters.Query
 import com.toms223.winterboot.annotations.parameters.Body
-import com.toms223.winterboot.annotations.response.XML
-import com.toms223.winterboot.annotations.response.YAML
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -99,7 +97,6 @@ class MethodProcessorTests {
                 return "$cookie Hello World"
             }
 
-            @XML
             @PutMapping("/body")
             fun bodyTest(@Body someClass: AnotherClass): AnotherClass{
                 println(someClass.someVal)
@@ -112,7 +109,6 @@ class MethodProcessorTests {
                 return header
             }
 
-            @YAML
             @GetMapping("custom/response")
             fun customResponseTest(): CustomResponse {
                 val resp = CustomResponse(listOf(Kookie("hello", "world")), listOf("header" to "added"))

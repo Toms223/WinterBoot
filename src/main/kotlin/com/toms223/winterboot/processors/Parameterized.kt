@@ -31,8 +31,7 @@ class Parameterized {
         fun process(
             method: KFunction<*>,
             parameters: List<KParameter>,
-            obj: Any, mapEntry:
-            Map.Entry<KClass<out Annotation>, HttpMethod>,
+            obj: Any, mapEntry: Map.Entry<KClass<out Annotation>, HttpMethod>,
             path: String
         ): RoutingHttpHandler {
             val filteredParameters = parameters.filter {
