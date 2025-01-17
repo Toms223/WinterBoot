@@ -4,7 +4,6 @@ plugins {
 }
 
 group = "com.toms223"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()

@@ -1,0 +1,27 @@
+name: Build And Release
+run-name: Building new .JAR
+on:
+  workflow_run:
+    workflows: [Verify Passing Tests]
+    types:
+      - completed
+jobs:
+  Make-Build-And-Release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Repository
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Test with Gradle
+        run: ./gradlew build
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: builds/libs/WinterBoot.jar
