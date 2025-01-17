@@ -1,5 +1,5 @@
-name: Verify Passing Tests
-run-name: Verifying current build
+name: Test Build and Release
+run-name: Testing Building and if successful new release
 on:
   push:
     tags:
@@ -21,3 +21,9 @@ jobs:
         run: chmod +x ./gradlew
       - name: Test with Gradle
         run: ./gradlew test
+      - name: Build with Gradlew
+        run: ./gradlew build
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: builds/libs/WinterBoot.jar
