@@ -26,4 +26,4 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: builds/libs/WinterBoot.jar
+          files: build/libs/WinterBoot.jar
