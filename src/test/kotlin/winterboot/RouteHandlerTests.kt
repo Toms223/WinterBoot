@@ -1,12 +1,12 @@
 package winterboot
 
-import com.toms223.winterboot.ClassFinder
-import com.toms223.winterboot.RouteHandler
-import com.toms223.winterboot.SeedFinder
-import com.toms223.winterboot.annotations.injection.Controller
-import com.toms223.winterboot.annotations.injection.Fruit
-import com.toms223.winterboot.annotations.injection.Seed
-import com.toms223.winterboot.annotations.mappings.GetMapping
+import io.github.toms223.winterboot.SeedFinder
+import io.github.toms223.winterboot.ClassFinder
+import io.github.toms223.winterboot.RouteHandler
+import io.github.toms223.winterboot.annotations.injection.Controller
+import io.github.toms223.winterboot.annotations.injection.Fruit
+import io.github.toms223.winterboot.annotations.injection.Seed
+import io.github.toms223.winterboot.annotations.mappings.GetMapping
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response

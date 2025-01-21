@@ -1,13 +1,13 @@
 package winterboot
 
 
-import com.toms223.winterboot.ClassFinder
-import com.toms223.winterboot.FilterHandler
-import com.toms223.winterboot.SeedFinder
-import com.toms223.winterboot.annotations.injection.Branch
-import com.toms223.winterboot.annotations.injection.Fruit
-import com.toms223.winterboot.annotations.injection.Leaf
-import com.toms223.winterboot.annotations.injection.Order
+
+import io.github.toms223.winterboot.ClassFinder
+import io.github.toms223.winterboot.FilterHandler
+import io.github.toms223.winterboot.annotations.injection.Branch
+import io.github.toms223.winterboot.annotations.injection.Fruit
+import io.github.toms223.winterboot.annotations.injection.Leaf
+import io.github.toms223.winterboot.annotations.injection.Order
 import org.http4k.core.*
 import java.io.File
 import kotlin.test.Test
@@ -37,7 +37,7 @@ class FilterHandlerTests {
                 clazz.annotationClass.simpleName == Branch::class.java.simpleName
             }
         }
-        private val seeds = SeedFinder().getSeeds(fruits)
+        private val seeds = io.github.toms223.winterboot.SeedFinder().getSeeds(fruits)
         val filterHandler = FilterHandler().get(seeds, branches)
     }
 

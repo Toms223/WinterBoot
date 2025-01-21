@@ -1,17 +1,15 @@
 package winterboot
 
 
-import com.toms223.winterboot.CustomResponse
-import com.toms223.winterboot.MethodProcessor
-import com.toms223.winterboot.annotations.mappings.DeleteMapping
-import com.toms223.winterboot.annotations.mappings.GetMapping
-import com.toms223.winterboot.annotations.mappings.PostMapping
-import com.toms223.winterboot.annotations.mappings.PutMapping
-import com.toms223.winterboot.annotations.parameters.Cookie
-import com.toms223.winterboot.annotations.parameters.Header
-import com.toms223.winterboot.annotations.parameters.Path
-import com.toms223.winterboot.annotations.parameters.Query
-import com.toms223.winterboot.annotations.parameters.Body
+
+import io.github.toms223.winterboot.CustomResponse
+import io.github.toms223.winterboot.MethodProcessor
+import io.github.toms223.winterboot.annotations.mappings.DeleteMapping
+import io.github.toms223.winterboot.annotations.mappings.GetMapping
+import io.github.toms223.winterboot.annotations.mappings.PostMapping
+import io.github.toms223.winterboot.annotations.mappings.PutMapping
+import io.github.toms223.winterboot.annotations.parameters.*
+import io.github.toms223.winterboot.annotations.parameters.Body
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString

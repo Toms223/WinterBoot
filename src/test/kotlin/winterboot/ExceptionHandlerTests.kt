@@ -2,12 +2,13 @@ package winterboot
 
 
 
-import com.toms223.winterboot.ClassFinder
-import com.toms223.winterboot.ExceptionHandler
-import com.toms223.winterboot.SeedFinder
-import com.toms223.winterboot.annotations.injection.Fruit
-import com.toms223.winterboot.annotations.injection.Insect
-import com.toms223.winterboot.annotations.injection.Pesticide
+
+
+import io.github.toms223.winterboot.ClassFinder
+import io.github.toms223.winterboot.ExceptionHandler
+import io.github.toms223.winterboot.annotations.injection.Fruit
+import io.github.toms223.winterboot.annotations.injection.Insect
+import io.github.toms223.winterboot.annotations.injection.Pesticide
 import org.http4k.core.*
 import java.io.File
 import kotlin.test.Test
@@ -35,7 +36,7 @@ class ExceptionHandlerTests {
                 clazz.annotationClass.simpleName == Pesticide::class.java.simpleName
             }
         }
-        private val seeds = SeedFinder().getSeeds(fruits)
+        private val seeds = io.github.toms223.winterboot.SeedFinder().getSeeds(fruits)
         val exceptionHandler = ExceptionHandler().get(seeds, pesticides)
     }
 
