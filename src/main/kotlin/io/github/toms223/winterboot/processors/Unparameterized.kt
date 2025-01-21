@@ -1,6 +1,7 @@
 package io.github.toms223.winterboot.processors
 
-import com.toms223.winterboot.CustomResponse
+
+import io.github.toms223.winterboot.CustomResponse
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import kotlinx.serialization.serializer
