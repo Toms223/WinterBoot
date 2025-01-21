@@ -1,7 +1,7 @@
 package com.toms223.winterboot
 
 
-import com.toms223.winterboot.annotations.Controller
+import com.toms223.winterboot.annotations.injection.Controller
 import com.toms223.winterboot.annotations.injection.Branch
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Pesticide
@@ -16,7 +16,16 @@ import java.io.File
 import java.time.Instant
 import kotlin.reflect.KClass
 
-class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
+/**
+ * The base class for creating filters, exception handlers and routes from classes
+ * annotated with @Branch, @Pesticide and Controller respectively.
+ *
+ * When using this class to generate your routes make sure there is at least one controller in your
+ * source.
+ *
+ * @param singlePageApplication an SPA parameter from HTTP4K
+ */
+class Winter(private val singlePageApplication: RoutingHttpHandler) {
     companion object {
         private val routeHandler = RouteHandler()
         private val filterHandler = FilterHandler()
@@ -98,16 +107,22 @@ class Winter(private val singlePageApplication: RoutingHttpHandler? = null) {
             return Winter(spa)
         }
 
+        /**
+         * Base function to create RoutingHttpHandler
+         * @return RoutingHttpHandler
+         */
         fun setup(): RoutingHttpHandler {
             return exceptions.then(filters).then(routes(routeList))
         }
     }
 
+    /**
+     * Base function to create RoutingHttpHandler to be fed into HTTP4K server
+     * Can only be used in case SPA is specified
+     * @return RoutingHttpHandler
+     */
     fun setup(): RoutingHttpHandler {
-        return if (singlePageApplication != null) {
-            exceptions.then(filters).then(routes(routeList + singlePageApplication))
-        } else {
-            exceptions.then(filters).then(routes(routeList))
-        }
+        return exceptions.then(filters).then(routes(routeList + singlePageApplication))
+
     }
 }

@@ -3,7 +3,7 @@ package winterboot
 import com.toms223.winterboot.ClassFinder
 import com.toms223.winterboot.RouteHandler
 import com.toms223.winterboot.SeedFinder
-import com.toms223.winterboot.annotations.Controller
+import com.toms223.winterboot.annotations.injection.Controller
 import com.toms223.winterboot.annotations.injection.Fruit
 import com.toms223.winterboot.annotations.injection.Seed
 import com.toms223.winterboot.annotations.mappings.GetMapping
